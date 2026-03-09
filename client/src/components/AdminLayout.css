@@ -1,0 +1,133 @@
+.admin-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-core);
+}
+
+.admin-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: var(--text-muted);
+}
+
+/* Sidebar */
+.admin-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border-delicate);
+  border-left: none;
+  border-top: none;
+  border-bottom: none;
+  border-radius: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  background: var(--bg-surface);
+}
+
+.admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 24px;
+}
+
+.admin-brand .brand-icon {
+  color: var(--accent-primary);
+}
+
+.admin-badge {
+  font-size: 0.7rem;
+  background: rgba(129, 140, 248, 0.2);
+  color: var(--accent-primary);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-left: auto;
+}
+
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 16px;
+  flex: 1;
+}
+
+.admin-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: var(--text-muted);
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.admin-nav-link:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-main);
+}
+
+.admin-nav-link.active {
+  background: rgba(129, 140, 248, 0.1);
+  color: var(--accent-primary);
+}
+
+.admin-sidebar-footer {
+  padding: 24px;
+  border-top: 1px solid var(--border-delicate);
+}
+
+.admin-user-info {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.admin-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 8px;
+  padding: 10px 16px;
+  background: transparent;
+  border: 1px solid var(--border-delicate);
+  color: var(--text-main);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+}
+
+.admin-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.1); /* Red tint */
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+/* Main content area */
+.admin-main {
+  flex: 1;
+  padding: 40px;
+  overflow-y: auto;
+}
+
+.admin-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.admin-page-title {
+  font-size: 2rem;
+  color: #fff;
+}

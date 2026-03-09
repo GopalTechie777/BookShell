@@ -1,0 +1,141 @@
+.reader-wrapper {
+  min-height: calc(100vh - 80px); /* Account for site header */
+  background: var(--bg-core);
+  padding-bottom: 80px;
+}
+
+.reader-toolbar {
+  position: sticky;
+  top: 80px; /* Below main site header */
+  z-index: 90;
+  border-left: none;
+  border-right: none;
+  border-radius: 0;
+  padding: 12px 0;
+  background: rgba(24, 26, 32, 0.85); /* Slightly more opaque glass */
+}
+
+.toolbar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toolbar-spacer {
+  width: 140px; /* Balance the TOC button width for center alignment */
+}
+
+.chapter-meta {
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.reader-container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 60px 24px;
+}
+
+/* Typography styles specifically tuned for long-form reading */
+.chapter-content {
+  font-family: 'Georgia', serif; /* Optional serif fallback for pure reading */
+  font-size: 1.25rem;
+  line-height: 1.8;
+  color: #e2e8f0;
+}
+
+.chapter-content h1, 
+.chapter-content h2 {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+  color: #fff;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.chapter-content h3 {
+  font-size: 1.75rem;
+  margin-top: 40px;
+  margin-bottom: 24px;
+  color: #fff;
+}
+
+.chapter-content p {
+  margin-bottom: 24px;
+  text-indent: 1.5rem;
+}
+
+.chapter-content p:first-of-type {
+  text-indent: 0; /* Traditional literary style */
+}
+
+.chapter-content p:last-child {
+  margin-bottom: 60px;
+}
+
+.reader-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 40px;
+  border-top: 1px solid var(--border-delicate);
+  margin-top: 40px;
+}
+
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color var(--transition-fast), transform var(--transition-fast);
+}
+
+.nav-btn:hover {
+  color: var(--text-main);
+}
+
+.nav-btn.primary {
+  padding: 16px 24px;
+  border-radius: var(--radius-full);
+  color: var(--text-main);
+  border-color: transparent;
+  background: var(--bg-surface-elevated);
+}
+
+.nav-btn.primary:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  color: #fff;
+  box-shadow: var(--shadow-glow);
+}
+
+.nav-btn.outline {
+  border-color: var(--border-delicate);
+  background: transparent;
+}
+
+.nav-placeholder {
+  width: 150px;
+}
+
+@media (max-width: 768px) {
+  .chapter-content {
+    font-size: 1.15rem;
+  }
+  
+  .toolbar-content {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .toolbar-spacer {
+    display: none;
+  }
+}
