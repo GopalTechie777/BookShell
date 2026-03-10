@@ -42,6 +42,8 @@ router.get(
             description: true,
             coverImage: true,
             isFeatured: true,
+            source: true,
+            gutenbergId: true,
             createdAt: true,
           },
         }),

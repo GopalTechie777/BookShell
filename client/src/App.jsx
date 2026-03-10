@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { UserProvider } from './context/UserContext';
 import Layout from './components/Layout';
 import AdminLayout from './components/AdminLayout';
 
@@ -10,6 +11,8 @@ import CategoriesIndexPage from './pages/CategoriesIndexPage';
 import BookDetailPage from './pages/BookDetailPage';
 import ReaderPage from './pages/ReaderPage';
 import SearchResultsPage from './pages/SearchResultsPage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
 
 // Admin Pages
 import AdminLoginPage from './pages/AdminLoginPage';
@@ -23,41 +26,45 @@ import './App.css';
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Layout />}>
-            <Route index element={<HomePage />} />
-            <Route path="categories" element={<CategoriesIndexPage />} />
-            <Route path="categories/:id" element={<CategoryPage />} />
-            <Route path="books/:id" element={<BookDetailPage />} />
-            <Route path="books/:id/read/:chapterId" element={<ReaderPage />} />
-            <Route path="search" element={<SearchResultsPage />} />
-            <Route path="*" element={<div className="container" style={{padding: '100px 24px', textAlign: 'center'}}><h2>404 - Page Not Found</h2></div>} />
-          </Route>
+    <UserProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Layout />}>
+              <Route index element={<HomePage />} />
+              <Route path="categories" element={<CategoriesIndexPage />} />
+              <Route path="categories/:id" element={<CategoryPage />} />
+              <Route path="books/:id" element={<BookDetailPage />} />
+              <Route path="books/:id/read/:chapterId" element={<ReaderPage />} />
+              <Route path="search" element={<SearchResultsPage />} />
+              <Route path="login" element={<LoginPage />} />
+              <Route path="signup" element={<SignupPage />} />
+              <Route path="*" element={<div className="container" style={{padding: '100px 24px', textAlign: 'center'}}><h2>404 - Page Not Found</h2></div>} />
+            </Route>
 
-          {/* Admin Login Route (No layout) */}
-          <Route path="/admin/login" element={<AdminLoginPage />} />
+            {/* Admin Login Route (No layout) */}
+            <Route path="/admin/login" element={<AdminLoginPage />} />
 
-          {/* Protected Admin Routes */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="dashboard" element={<AdminDashboard />} />
-            
-            <Route path="categories" element={<AdminCategories />} />
-            
-            <Route path="books" element={<AdminBooks />} />
-            <Route path="books/new" element={<AdminBookForm />} />
-            <Route path="books/:id" element={<AdminBookForm />} />
-            
-            <Route path="books/:id/chapters" element={<AdminChapters />} />
-            <Route path="books/:id/chapters/new" element={<AdminChapterForm />} />
-            <Route path="books/:id/chapters/:chapterId/edit" element={<AdminChapterForm />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+            {/* Protected Admin Routes */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="dashboard" element={<AdminDashboard />} />
+              
+              <Route path="categories" element={<AdminCategories />} />
+              
+              <Route path="books" element={<AdminBooks />} />
+              <Route path="books/new" element={<AdminBookForm />} />
+              <Route path="books/:id" element={<AdminBookForm />} />
+              
+              <Route path="books/:id/chapters" element={<AdminChapters />} />
+              <Route path="books/:id/chapters/new" element={<AdminChapterForm />} />
+              <Route path="books/:id/chapters/:chapterId/edit" element={<AdminChapterForm />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </UserProvider>
   );
 }
 

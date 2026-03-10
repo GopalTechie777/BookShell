@@ -1,0 +1,54 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { userApi } from '../services/api';
+
+const UserContext = createContext();
+
+export const useUser = () => useContext(UserContext);
+
+export const UserProvider = ({ children }) => {
+  const [user, setUser] = useState(null);   // { id, email, username }
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem('userToken');
+    const stored = localStorage.getItem('userProfile');
+    if (token && stored) {
+      try {
+        setUser(JSON.parse(stored));
+      } catch {
+        localStorage.removeItem('userProfile');
+      }
+    }
+    setLoading(false);
+  }, []);
+
+  const signup = async (email, username, password) => {
+    const res = await userApi.signup({ email, username, password });
+    const { token, user: profile } = res.data.data;
+    localStorage.setItem('userToken', token);
+    localStorage.setItem('userProfile', JSON.stringify(profile));
+    setUser(profile);
+    return profile;
+  };
+
+  const login = async (email, password) => {
+    const res = await userApi.login({ email, password });
+    const { token, user: profile } = res.data.data;
+    localStorage.setItem('userToken', token);
+    localStorage.setItem('userProfile', JSON.stringify(profile));
+    setUser(profile);
+    return profile;
+  };
+
+  const logout = () => {
+    localStorage.removeItem('userToken');
+    localStorage.removeItem('userProfile');
+    setUser(null);
+  };
+
+  return (
+    <UserContext.Provider value={{ user, loading, signup, login, logout }}>
+      {children}
+    </UserContext.Provider>
+  );
+};

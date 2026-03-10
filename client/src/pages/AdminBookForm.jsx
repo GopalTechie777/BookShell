@@ -6,7 +6,7 @@ import './AdminForm.css';
 
 export default function AdminBookForm() {
   const { id } = useParams();
-  const isEditing = id !== 'new';
+  const isEditing = !!id;
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 

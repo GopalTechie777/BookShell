@@ -1,0 +1,49 @@
+# ── Dependencies ────────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ── Environment / Secrets ────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Build outputs ────────────────────────────────────────────
+dist/
+dist-ssr/
+build/
+out/
+
+# ── Drizzle / Database ───────────────────────────────────────
+drizzle/
+*.db
+*.sqlite
+*.sqlite-journal
+
+# ── Logs ─────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ── Runtime / OS ─────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.local
+
+# ── Editor ───────────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ── Vite cache ───────────────────────────────────────────────
+.vite/
+
+# ── Test coverage ────────────────────────────────────────────
+coverage/

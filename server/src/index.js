@@ -15,6 +15,9 @@ const adminAuthRouter = require('./routes/admin/auth');
 const adminCategoriesRouter = require('./routes/admin/categories');
 const adminBooksRouter = require('./routes/admin/books');
 const adminChaptersRouter = require('./routes/admin/chapters');
+const gutenbergRouter = require('./routes/gutenberg');
+const adminGutenbergRouter = require('./routes/admin/gutenberg');
+const authRouter = require('./routes/auth');
 
 const app = express();
 
@@ -59,6 +62,8 @@ app.use('/api/v1/categories', categoriesRouter);
 app.use('/api/v1/books', booksRouter);
 app.use('/api/v1/books/:id/chapters', chaptersRouter);
 app.use('/api/v1/search', searchRouter);
+app.use('/api/v1/gutenberg', gutenbergRouter);
+app.use('/api/v1/auth', authRouter);
 
 // ── Admin API Routes ───────────────────────────────────────────────────────
 app.use('/api/v1/admin', adminAuthRouter);
@@ -67,6 +72,7 @@ app.use('/api/v1/admin/books', adminBooksRouter);
 app.use('/api/v1/admin/books/:id/chapters', adminChaptersRouter);
 // Standalone chapter update/delete (no book prefix)
 app.use('/api/v1/admin/chapters', adminChaptersRouter);
+app.use('/api/v1/admin/gutenberg', adminGutenbergRouter);
 
 // ── Production Frontend Serving ──────────────────────────────────────────
 if (process.env.NODE_ENV === 'production') {

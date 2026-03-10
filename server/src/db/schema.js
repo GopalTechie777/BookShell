@@ -1,4 +1,5 @@
 const { pgTable, uuid, varchar, text, boolean, timestamp, integer, unique } = require('drizzle-orm/pg-core');
+
 const { relations } = require('drizzle-orm');
 
 // ── Tables ──────────────────────────────────────────────────────────────────
@@ -19,6 +20,8 @@ const books = pgTable('books', {
   coverImage: varchar('cover_image', { length: 500 }),
   isFeatured: boolean('is_featured').default(false).notNull(),
   categoryId: uuid('category_id').references(() => categories.id, { onDelete: 'set null' }),
+  source: varchar('source', { length: 50 }).default('manual').notNull(),
+  gutenbergId: integer('gutenberg_id').unique(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -44,6 +47,15 @@ const admins = pgTable('admins', {
   username: varchar('username', { length: 100 }).notNull().unique(),
   passwordHash: varchar('password_hash', { length: 255 }).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+const users = pgTable('users', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  username: varchar('username', { length: 100 }).notNull().unique(),
+  passwordHash: varchar('password_hash', { length: 255 }).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 // ── Relations ───────────────────────────────────────────────────────────────
@@ -72,6 +84,7 @@ module.exports = {
   books,
   chapters,
   admins,
+  users,
   categoriesRelations,
   booksRelations,
   chaptersRelations,

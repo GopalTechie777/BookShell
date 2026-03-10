@@ -1,11 +1,13 @@
 import { Link, Outlet, useNavigate, useSearchParams } from 'react-router-dom';
-import { BookOpen, Search } from 'lucide-react';
+import { BookOpen, Search, LogIn, LogOut, UserCircle } from 'lucide-react';
+import { useUser } from '../context/UserContext';
 import './Layout.css';
 
 export default function Layout() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const q = searchParams.get('q') || '';
+  const { user, logout } = useUser();
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -36,6 +38,23 @@ export default function Layout() {
 
           <nav className="header-nav">
             <Link to="/categories" className="nav-link">Categories</Link>
+            {user ? (
+              <>
+                <span className="nav-user">
+                  <UserCircle size={18} />
+                  {user.username}
+                </span>
+                <button className="nav-logout-btn" onClick={logout}>
+                  <LogOut size={15} />
+                  Log out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="nav-link">Log in</Link>
+                <Link to="/signup" className="nav-signup-btn">Sign Up</Link>
+              </>
+            )}
           </nav>
         </div>
       </header>

@@ -24,6 +24,17 @@ export const bookApi = {
   search: (query) => api.get('/search', { params: query }),
 };
 
+export const gutenbergApi = {
+  search: (q, page = 1) => api.get('/gutenberg/search', { params: { q, page } }),
+};
+
+export const userApi = {
+  signup: (data) => api.post('/auth/signup', data),
+  login: (data) => api.post('/auth/login', data),
+  me: () => api.get('/auth/me'),
+};
+
+
 export const categoryApi = {
   getCategories: () => api.get('/categories'),
   getCategoryBooks: (id, params) => api.get(`/categories/${id}/books`, { params }),
@@ -50,6 +61,10 @@ export const adminApi = {
   createChapter: (bookId, data) => api.post(`/admin/books/${bookId}/chapters`, data),
   updateChapter: (chapterId, data) => api.put(`/admin/chapters/${chapterId}`, data),
   deleteChapter: (chapterId) => api.delete(`/admin/chapters/${chapterId}`),
+
+  // Gutenberg import
+  importGutenbergBook: (gutenbergId) => api.post('/admin/gutenberg/import', { gutenbergId }),
+  reimportGutenbergBook: (bookId) => api.put('/admin/gutenberg/reimport', { bookId }),
 };
 
 export default api;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { adminApi, bookApi } from '../services/api';
-import { FileText, Edit2, Trash2, Plus, List } from 'lucide-react';
+import { FileText, Edit2, Trash2, Plus, List, RotateCw } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import Pagination from '../components/Pagination';
 import './AdminCategories.css'; // Shared table styles
@@ -10,6 +10,7 @@ export default function AdminBooks() {
   const [books, setBooks] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [reimportingId, setReimportingId] = useState(null); // bookId currently being reimported
   const [params] = useSearchParams();
   const page = parseInt(params.get('page')) || 1;
   const limit = 15;
@@ -36,6 +37,21 @@ export default function AdminBooks() {
       loadBooks();
     } catch (err) {
       alert(err.response?.data?.error?.message || 'Error deleting book');
+    }
+  };
+
+  const handleReimport = async (book) => {
+    if (!window.confirm(`Re-import "${book.title}" from Project Gutenberg?\n\nThis will delete all existing chapters and re-download the full book with the latest parser.`)) return;
+    setReimportingId(book.id);
+    try {
+      const res = await adminApi.reimportGutenbergBook(book.id);
+      const { chaptersImported } = res.data.data;
+      alert(`Done! "${book.title}" now has ${chaptersImported} chapters.`);
+      loadBooks();
+    } catch (err) {
+      alert(err.response?.data?.error?.message || 'Reimport failed');
+    } finally {
+      setReimportingId(null);
     }
   };
 
@@ -80,6 +96,11 @@ export default function AdminBooks() {
                     <td>
                       <div className="font-medium text-white">{book.title}</div>
                       <div className="text-muted" style={{ fontSize: '0.85rem' }}>{book.author}</div>
+                      {book.source === 'gutenberg' && (
+                        <span style={{ fontSize: '0.72rem', color: 'rgba(139,92,246,0.8)', letterSpacing: '0.04em' }}>
+                          Project Gutenberg
+                        </span>
+                      )}
                     </td>
                     <td className="text-muted">{book.category ? book.category.name : 'Uncategorized'}</td>
                     <td>
@@ -87,10 +108,21 @@ export default function AdminBooks() {
                          {book.isFeatured ? 'Yes' : 'No'}
                        </span>
                     </td>
-                    <td className="text-right table-actions inline-actions" style={{ minWidth: '160px' }}>
+                    <td className="text-right table-actions inline-actions" style={{ minWidth: '180px' }}>
                       <Link to={`/admin/books/${book.id}/chapters`} className="action-btn text-muted" title="Manage Chapters">
                         <List size={16} />
                       </Link>
+                      {book.source === 'gutenberg' && (
+                        <button
+                          onClick={() => handleReimport(book)}
+                          disabled={reimportingId === book.id}
+                          className="action-btn text-muted"
+                          title="Re-import from Project Gutenberg (fixes missing chapters)"
+                          style={{ opacity: reimportingId === book.id ? 0.5 : 1 }}
+                        >
+                          <RotateCw size={16} style={reimportingId === book.id ? { animation: 'spin 1s linear infinite' } : {}} />
+                        </button>
+                      )}
                       <Link to={`/admin/books/${book.id}`} className="action-btn edit" title="Edit Book">
                         <Edit2 size={16} />
                       </Link>
