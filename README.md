@@ -85,14 +85,14 @@ npm install
 ```
 
 ### 3. Configure environment variables
-- Copy `.env.example` to `.env` in the `server/` folder and fill in your PostgreSQL connection string and other secrets.
+- Copy `.env.example` to `.env` in the `server/` folder and fill in your PostgreSQL connection string and secrets.
+- **Never commit your `.env` file!**
 
 ### 4. Database setup
 From the `server/` directory:
 ```sh
-npm run db:generate   # Generate Drizzle ORM client
-npm run db:migrate    # Run migrations
-npm run seed          # Seed the database with sample data
+npm run db:push    # Push Drizzle schema to your database
+npm run seed       # (Optional) Seed the database with sample data
 ```
 
 ### 5. Run the app
@@ -105,26 +105,23 @@ npm run dev
 npm run dev
 ```
 - Frontend: http://localhost:5173
-- Backend API: http://localhost:3001 (default)
+- Backend API: http://localhost:3000 (default)
 
 ---
 
 ## Usage
 - Visit the frontend URL to browse, search, and read books.
-- Admins can log in at `/admin/login` to manage content.
+- Sign up or log in as a user to save your reading progress.
+- Admins can log in at `/admin/login` to manage content and import books from Project Gutenberg.
 
 ---
 
 ## API Overview
-- RESTful endpoints for books, categories, chapters, search, and admin actions.
-- See `server/src/routes/` for route details.
-- Example endpoints:
-  - `GET /categories` — List categories
-  - `GET /books` — List books
-  - `GET /books/:id` — Book details
-  - `GET /books/:id/read/:chapterId` — Chapter content
-  - `POST /admin/login` — Admin login
-  - `POST /admin/books` — Add a book (admin)
+- RESTful endpoints for books, categories, chapters, search, user and admin actions.
+- Project Gutenberg search: `GET /api/v1/gutenberg/search?q=...`
+- User auth: `POST /api/v1/auth/signup`, `POST /api/v1/auth/login`, `GET /api/v1/auth/me`
+- Admin Gutenberg import: `POST /api/v1/admin/gutenberg/import`, `PUT /api/v1/admin/gutenberg/reimport`
+- See `server/src/routes/` for full details.
 
 ---
 
