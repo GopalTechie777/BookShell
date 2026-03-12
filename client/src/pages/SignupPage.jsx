@@ -13,7 +13,7 @@ export default function SignupPage() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signup } = useUser();
+  const { requestSignupOtp } = useUser();
   const navigate = useNavigate();
 
   const handleChange = (e) =>
@@ -51,10 +51,18 @@ export default function SignupPage() {
     }
     setLoading(true);
     try {
-      await signup(form.email, form.username, form.password);
-      navigate('/', { replace: true });
+      await requestSignupOtp(form.email, form.username, form.password);
+      navigate('/signup/verify', {
+        state: {
+          email: form.email,
+          username: form.username,
+          password: form.password,
+        },
+      });
     } catch (err) {
-      setError(err.response?.data?.message || 'Sign up failed. Please try again.');
+      setError(
+        err.response?.data?.error?.message || err.message || 'OTP request failed. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
@@ -128,7 +136,7 @@ export default function SignupPage() {
 
           <button className="auth-btn" type="submit" disabled={loading}>
             <UserPlus size={18} />
-            {loading ? 'Creating account…' : 'Sign Up'}
+            {loading ? 'Sending code…' : 'Send OTP'}
           </button>
         </form>
 

@@ -13,6 +13,7 @@ import ReaderPage from './pages/ReaderPage';
 import SearchResultsPage from './pages/SearchResultsPage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import SignupVerifyPage from './pages/SignupVerifyPage';
 
 // Admin Pages
 import AdminLoginPage from './pages/AdminLoginPage';
@@ -40,6 +41,7 @@ function App() {
               <Route path="search" element={<SearchResultsPage />} />
               <Route path="login" element={<LoginPage />} />
               <Route path="signup" element={<SignupPage />} />
+              <Route path="signup/verify" element={<SignupVerifyPage />} />
               <Route path="*" element={<div className="container" style={{padding: '100px 24px', textAlign: 'center'}}><h2>404 - Page Not Found</h2></div>} />
             </Route>
 

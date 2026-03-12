@@ -5,7 +5,7 @@ import { useUser } from '../context/UserContext';
 import './AuthPage.css';
 
 export default function LoginPage() {
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ identifier: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useUser();
@@ -19,16 +19,16 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    if (!form.email || !form.password) {
+    if (!form.identifier || !form.password) {
       setError('Please fill in all fields.');
       return;
     }
     setLoading(true);
     try {
-      await login(form.email, form.password);
+      await login(form.identifier, form.password);
       navigate(from, { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid email or password.');
+      setError(err.response?.data?.message || 'Invalid email/username or password.');
     } finally {
       setLoading(false);
     }
@@ -49,15 +49,15 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} noValidate>
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="identifier">Email or Username</label>
             <input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="you@example.com"
-              value={form.email}
+              id="identifier"
+              name="identifier"
+              type="text"
+              placeholder="you@example.com or username"
+              value={form.identifier}
               onChange={handleChange}
-              autoComplete="email"
+              autoComplete="username"
             />
           </div>
 

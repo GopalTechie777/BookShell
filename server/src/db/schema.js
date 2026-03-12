@@ -58,6 +58,24 @@ const users = pgTable('users', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+const signupOtps = pgTable(
+  'signup_otps',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    email: varchar('email', { length: 255 }).notNull(),
+    username: varchar('username', { length: 100 }).notNull(),
+    passwordHash: varchar('password_hash', { length: 255 }).notNull(),
+    otpHash: varchar('otp_hash', { length: 255 }).notNull(),
+    expiresAt: timestamp('expires_at').notNull(),
+    consumedAt: timestamp('consumed_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    unique('signup_otps_email_unique').on(table.email),
+    unique('signup_otps_username_unique').on(table.username),
+  ]
+);
+
 // ── Relations ───────────────────────────────────────────────────────────────
 
 const categoriesRelations = relations(categories, ({ many }) => ({
@@ -85,6 +103,7 @@ module.exports = {
   chapters,
   admins,
   users,
+  signupOtps,
   categoriesRelations,
   booksRelations,
   chaptersRelations,

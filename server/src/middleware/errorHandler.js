@@ -4,8 +4,13 @@
  *   { error: { message, status } }
  */
 function errorHandler(err, req, res, next) {
-  const status = err.status || err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
+  let status = err.status || err.statusCode || 500;
+  let message = err.message || 'Internal Server Error';
+
+  if (err.code === '42P01' && /signup_otps/i.test(message)) {
+    status = 500;
+    message = "Database missing table 'signup_otps'. Run migrations (npm run db:push).";
+  }
 
   if (process.env.NODE_ENV !== 'production') {
     console.error(`[Error] ${status} — ${message}`);

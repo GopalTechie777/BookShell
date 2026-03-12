@@ -22,8 +22,13 @@ export const UserProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const signup = async (email, username, password) => {
-    const res = await userApi.signup({ email, username, password });
+  const requestSignupOtp = async (email, username, password) => {
+    const res = await userApi.requestSignupOtp({ email, username, password });
+    return res.data.data;
+  };
+
+  const verifySignupOtp = async (email, otp) => {
+    const res = await userApi.verifySignupOtp({ email, otp });
     const { token, user: profile } = res.data.data;
     localStorage.setItem('userToken', token);
     localStorage.setItem('userProfile', JSON.stringify(profile));
@@ -31,8 +36,8 @@ export const UserProvider = ({ children }) => {
     return profile;
   };
 
-  const login = async (email, password) => {
-    const res = await userApi.login({ email, password });
+  const login = async (identifier, password) => {
+    const res = await userApi.login({ identifier, password });
     const { token, user: profile } = res.data.data;
     localStorage.setItem('userToken', token);
     localStorage.setItem('userProfile', JSON.stringify(profile));
@@ -47,7 +52,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, loading, signup, login, logout }}>
+    <UserContext.Provider value={{ user, loading, requestSignupOtp, verifySignupOtp, login, logout }}>
       {children}
     </UserContext.Provider>
   );

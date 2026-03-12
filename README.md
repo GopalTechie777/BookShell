@@ -22,6 +22,8 @@ A clean, distraction-free web app for browsing and reading books online. Built w
 - Read books in a clean, mobile-friendly reader
 - Admin dashboard for managing books, categories, and chapters
 - JWT-based admin authentication
+- User signup with email OTP verification
+- User login with email or username
 - RESTful API with PostgreSQL database
 
 ---
@@ -30,7 +32,7 @@ A clean, distraction-free web app for browsing and reading books online. Built w
 - **Frontend:** React 18, Vite, React Router, CSS Modules
 - **Backend:** Node.js, Express, Drizzle ORM
 - **Database:** PostgreSQL
-- **Other:** JWT, Helmet, Multer, dotenv
+- **Other:** JWT, Helmet, Multer, Nodemailer, dotenv
 
 ---
 
@@ -88,6 +90,17 @@ npm install
 - Copy `.env.example` to `.env` in the `server/` folder and fill in your PostgreSQL connection string and secrets.
 - **Never commit your `.env` file!**
 
+Minimum SMTP variables for OTP signup (Gmail example):
+```
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_gmail_app_password
+SMTP_FROM=BookShell <your_email@gmail.com>
+EMAIL_FROM=your_email@gmail.com
+```
+
 ### 4. Database setup
 From the `server/` directory:
 ```sh
@@ -111,7 +124,7 @@ npm run dev
 
 ## Usage
 - Visit the frontend URL to browse, search, and read books.
-- Sign up or log in as a user to save your reading progress.
+- Sign up with email OTP, then log in with email or username.
 - Admins can log in at `/admin/login` to manage content and import books from Project Gutenberg.
 
 ---
@@ -119,7 +132,7 @@ npm run dev
 ## API Overview
 - RESTful endpoints for books, categories, chapters, search, user and admin actions.
 - Project Gutenberg search: `GET /api/v1/gutenberg/search?q=...`
-- User auth: `POST /api/v1/auth/signup`, `POST /api/v1/auth/login`, `GET /api/v1/auth/me`
+- User auth: `POST /api/v1/auth/signup/request-otp`, `POST /api/v1/auth/signup/verify`, `POST /api/v1/auth/login`, `GET /api/v1/auth/me`
 - Admin Gutenberg import: `POST /api/v1/admin/gutenberg/import`, `PUT /api/v1/admin/gutenberg/reimport`
 - See `server/src/routes/` for full details.
 
