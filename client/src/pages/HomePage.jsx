@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, TrendingUp, Grid } from 'lucide-react';
+import { BookOpen, TrendingUp, Grid, Sparkles, Feather, Archive } from 'lucide-react';
 import { bookApi, categoryApi } from '../services/api';
 import BookCard from '../components/BookCard';
 import './HomePage.css';
@@ -35,21 +35,63 @@ export default function HomePage() {
     <div className="homepage">
       {/* Hero Section */}
       <section className="hero-section">
-        <div className="hero-background"></div>
+        <div className="hero-glow"></div>
         <div className="container hero-content">
+          <div className="hero-badge">
+            <Sparkles size={16} className="hero-badge-icon" />
+            <span>Welcome to the new BookShell</span>
+          </div>
           <h1 className="hero-title">
-            Discover Your Next <br />
-            <span className="text-gradient">Great Adventure</span>
+            Your Digital Library, <br />
+            <span className="text-gradient">Redefined.</span>
           </h1>
           <p className="hero-subtitle">
-            A minimalist library of timeless literature and modern stories.
-            Free from distractions, built for readers.
+            Immerse yourself in a beautiful, distraction-free reading experience.
+            Thousands of true classics and modern stories, elegantly presented.
           </p>
-          <a href="#featured" className="hero-btn active">Start Browsing</a>
+          <div className="hero-actions">
+            <a href="#featured" className="btn btn-primary">Start Reading</a>
+            <Link to="/categories" className="btn btn-secondary glass-panel">Browse Categories</Link>
+          </div>
+          <div className="hero-stats">
+            <div className="stat-item">
+              <span className="stat-value">10k+</span>
+              <span className="stat-label">Free Books</span>
+            </div>
+            <div className="stat-divider"></div>
+            <div className="stat-item">
+              <span className="stat-value">Zero</span>
+              <span className="stat-label">Distractions</span>
+            </div>
+            <div className="stat-divider"></div>
+            <div className="stat-item">
+              <span className="stat-value">Sync</span>
+              <span className="stat-label">Anywhere</span>
+            </div>
+          </div>
         </div>
       </section>
 
-      <div className="container">
+      <div className="container main-content-spacing">
+        {/* Features Section */}
+        <section className="features-section">
+          <div className="feature-card glass-panel">
+            <div className="feature-icon-wrapper"><BookOpen size={24} /></div>
+            <h3>Pure Reading</h3>
+            <p>A minimalist interface designed solely for your reading pleasure, without ads or clutter.</p>
+          </div>
+          <div className="feature-card glass-panel">
+            <div className="feature-icon-wrapper"><Archive size={24} /></div>
+            <h3>Curated Collections</h3>
+            <p>Hand-picked selections spanning across multiple genres, eras, and literary movements.</p>
+          </div>
+          <div className="feature-card glass-panel">
+            <div className="feature-icon-wrapper"><Feather size={24} /></div>
+            <h3>Always Free</h3>
+            <p>Access our entire catalog without subscriptions, paywalls, or hidden fees.</p>
+          </div>
+        </section>
+
         {/* Categories Section */}
         <section className="categories-section">
           <div className="section-header">
