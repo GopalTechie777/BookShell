@@ -31,6 +31,8 @@ export const gutenbergApi = {
 export const userApi = {
   requestSignupOtp: (data) => api.post('/auth/signup/request-otp', data),
   verifySignupOtp: (data) => api.post('/auth/signup/verify', data),
+  requestPasswordResetOtp: (data) => api.post('/auth/forgot-password/request-otp', data),
+  resetPassword: (data) => api.post('/auth/forgot-password/reset', data),
   login: (data) => api.post('/auth/login', data),
   me: () => api.get('/auth/me'),
 };

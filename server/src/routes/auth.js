@@ -5,10 +5,10 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { eq, or, and, isNull } = require('drizzle-orm');
 const { db } = require('../db');
-const { users, signupOtps } = require('../db/schema');
+const { users, signupOtps, passwordResetOtps } = require('../db/schema');
 const validate = require('../middleware/validate');
 const userAuth = require('../middleware/userAuth');
-const { sendSignupOtpEmail } = require('../utils/mailer');
+const { sendSignupOtpEmail, sendPasswordResetOtpEmail } = require('../utils/mailer');
 
 const router = express.Router();
 
@@ -267,5 +267,146 @@ router.get('/me', userAuth, async (req, res, next) => {
     next(err);
   }
 });
+
+// ── POST /api/v1/auth/forgot-password/request-otp ─────────────────────────
+router.post(
+  '/forgot-password/request-otp',
+  [
+    body('email')
+      .trim()
+      .notEmpty().withMessage('Email is required')
+      .isEmail().withMessage('Must be a valid email address')
+      .normalizeEmail(),
+  ],
+  validate,
+  async (req, res, next) => {
+    try {
+      const { email } = req.body;
+
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, email))
+        .limit(1);
+
+      if (!user) {
+        // Obfuscate whether user exists
+        return res.status(200).json({
+          data: { message: 'If that email is registered, an OTP was sent.' },
+        });
+      }
+
+      const otp = String(crypto.randomInt(100000, 1000000));
+      const otpHash = await bcrypt.hash(otp, 10);
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+      await db
+        .insert(passwordResetOtps)
+        .values({ email, otpHash, expiresAt })
+        .onConflictDoUpdate({
+          target: passwordResetOtps.email,
+          set: {
+            otpHash,
+            expiresAt,
+            consumedAt: null,
+            createdAt: new Date(),
+          },
+        });
+
+      await sendPasswordResetOtpEmail({ to: email, otp });
+
+      res.status(200).json({
+        data: { message: 'If that email is registered, an OTP was sent.' },
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// ── POST /api/v1/auth/forgot-password/reset ───────────────────────────────
+router.post(
+  '/forgot-password/reset',
+  [
+    body('email')
+      .trim()
+      .notEmpty().withMessage('Email is required')
+      .isEmail().withMessage('Must be a valid email address')
+      .normalizeEmail(),
+    body('otp')
+      .trim()
+      .notEmpty().withMessage('OTP is required')
+      .isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits')
+      .isNumeric().withMessage('OTP must be numeric'),
+    body('newPassword')
+      .notEmpty().withMessage('New password is required')
+      .isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
+  ],
+  validate,
+  async (req, res, next) => {
+    try {
+      const { email, otp, newPassword } = req.body;
+
+      const [pending] = await db
+        .select()
+        .from(passwordResetOtps)
+        .where(and(eq(passwordResetOtps.email, email), isNull(passwordResetOtps.consumedAt)))
+        .limit(1);
+
+      if (!pending) {
+        return res.status(400).json({
+          error: { message: 'No pending password reset for this email', status: 400 },
+        });
+      }
+
+      if (pending.expiresAt < new Date()) {
+        return res.status(400).json({
+          error: { message: 'OTP expired, please request a new one', status: 400 },
+        });
+      }
+
+      const valid = await bcrypt.compare(otp, pending.otpHash);
+      if (!valid) {
+        return res.status(401).json({
+          error: { message: 'Invalid OTP', status: 401 },
+        });
+      }
+
+      const passwordHash = await bcrypt.hash(newPassword, 10);
+      
+      const [updatedUser] = await db
+        .update(users)
+        .set({ passwordHash })
+        .where(eq(users.email, email))
+        .returning();
+
+      if (!updatedUser) {
+        return res.status(404).json({
+          error: { message: 'User not found', status: 404 },
+        });
+      }
+
+      await db
+        .delete(passwordResetOtps)
+        .where(eq(passwordResetOtps.id, pending.id));
+
+      const token = jwt.sign(
+        { id: updatedUser.id, email: updatedUser.email, username: updatedUser.username, role: 'user' },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+      );
+
+      res.status(200).json({
+        data: {
+          token,
+          user: { id: updatedUser.id, email: updatedUser.email, username: updatedUser.username },
+          message: 'Password reset successful',
+        },
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 module.exports = router;

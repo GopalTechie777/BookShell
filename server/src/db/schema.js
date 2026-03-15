@@ -76,6 +76,21 @@ const signupOtps = pgTable(
   ]
 );
 
+const passwordResetOtps = pgTable(
+  'password_reset_otps',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    email: varchar('email', { length: 255 }).notNull(),
+    otpHash: varchar('otp_hash', { length: 255 }).notNull(),
+    expiresAt: timestamp('expires_at').notNull(),
+    consumedAt: timestamp('consumed_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (table) => [
+    unique('password_reset_otps_email_unique').on(table.email),
+  ]
+);
+
 // ── Relations ───────────────────────────────────────────────────────────────
 
 const categoriesRelations = relations(categories, ({ many }) => ({
@@ -104,6 +119,7 @@ module.exports = {
   admins,
   users,
   signupOtps,
+  passwordResetOtps,
   categoriesRelations,
   booksRelations,
   chaptersRelations,

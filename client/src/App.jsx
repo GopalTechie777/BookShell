@@ -12,6 +12,7 @@ import BookDetailPage from './pages/BookDetailPage';
 import ReaderPage from './pages/ReaderPage';
 import SearchResultsPage from './pages/SearchResultsPage';
 import LoginPage from './pages/LoginPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import SignupPage from './pages/SignupPage';
 import SignupVerifyPage from './pages/SignupVerifyPage';
 
@@ -40,6 +41,7 @@ function App() {
               <Route path="books/:id/read/:chapterId" element={<ReaderPage />} />
               <Route path="search" element={<SearchResultsPage />} />
               <Route path="login" element={<LoginPage />} />
+              <Route path="forgot-password" element={<ForgotPasswordPage />} />
               <Route path="signup" element={<SignupPage />} />
               <Route path="signup/verify" element={<SignupVerifyPage />} />
               <Route path="*" element={<div className="container" style={{padding: '100px 24px', textAlign: 'center'}}><h2>404 - Page Not Found</h2></div>} />

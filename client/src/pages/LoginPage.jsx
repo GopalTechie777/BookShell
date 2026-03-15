@@ -62,7 +62,10 @@ export default function LoginPage() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">
+              Password
+              <Link to="/forgot-password" style={{ float: 'right', fontSize: '0.85rem', color: 'var(--accent-primary)', fontWeight: '500' }}>Forgot password?</Link>
+            </label>
             <input
               id="password"
               name="password"

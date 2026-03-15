@@ -36,6 +36,20 @@ export const UserProvider = ({ children }) => {
     return profile;
   };
 
+  const requestPasswordResetOtp = async (email) => {
+    const res = await userApi.requestPasswordResetOtp({ email });
+    return res.data.data;
+  };
+
+  const resetPassword = async (email, otp, newPassword) => {
+    const res = await userApi.resetPassword({ email, otp, newPassword });
+    const { token, user: profile } = res.data.data;
+    localStorage.setItem('userToken', token);
+    localStorage.setItem('userProfile', JSON.stringify(profile));
+    setUser(profile);
+    return profile;
+  };
+
   const login = async (identifier, password) => {
     const res = await userApi.login({ identifier, password });
     const { token, user: profile } = res.data.data;
@@ -52,7 +66,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, loading, requestSignupOtp, verifySignupOtp, login, logout }}>
+    <UserContext.Provider value={{ user, loading, requestSignupOtp, verifySignupOtp, requestPasswordResetOtp, resetPassword, login, logout }}>
       {children}
     </UserContext.Provider>
   );
