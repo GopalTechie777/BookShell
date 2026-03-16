@@ -1,42 +1,41 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&display=swap');
-
 :root {
-  /* Premium Dark Theme Core Tokens */
-  --bg-core: #0f1115;
-  --bg-surface: #181a20;
-  --bg-surface-elevated: #21242c;
-  
-  --text-main: #e2e8f0;
-  --text-muted: #94a3b8;
-  
+  /* Light Theme Core Tokens (ManyBooks Inspired) */
+  --bg-core: #f8f9fa;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #ffffff;
+
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+
   /* Vibrant Accents */
-  --accent-primary: #818cf8; /* Soft Indigo */
-  --accent-primary-hover: #6366f1;
-  --accent-secondary: #c084fc; /* Soft Purple */
-  
+  --accent-primary: #dc2626; /* ManyBooks often uses red/orange for primary accents */
+  --accent-primary-hover: #b91c1c;
+  --accent-secondary: #1e3a8a; /* Deep blue used in headers */
+
   /* Gradients */
-  --gradient-primary: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  --gradient-subtle: linear-gradient(180deg, rgba(24, 26, 32, 0) 0%, rgba(15, 17, 21, 1) 100%);
+  --gradient-primary: linear-gradient(135deg, #f59e0b, #fbbf24);
+  --gradient-subtle: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(243, 244, 246, 1) 100%);
   
   /* Borders and UI */
-  --border-delicate: rgba(255, 255, 255, 0.08);
-  --border-focus: rgba(129, 140, 248, 0.5);
-  
+  --border-delicate: rgba(0, 0, 0, 0.1);
+  --border-focus: rgba(245, 158, 11, 0.5);
+
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 20px;
   --radius-full: 9999px;
-  
+
   /* Fonts */
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-display: 'Outfit', sans-serif;
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-glow: 0 0 20px rgba(129, 140, 248, 0.2);
-  
+  --shadow-glow: 0 0 20px rgba(245, 158, 11, 0.2);
+
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -76,17 +75,18 @@ button, input, textarea {
   background: none;
 }
 
-/* Glassmorphism Utilities */
+/* Glassmorphism Utilities - Updated for Light Theme */
 .glass-panel {
-  background: rgba(24, 26, 32, 0.6);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-delicate);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Text Gradients */
 .text-gradient {
-  background: var(--gradient-primary);
+  background: linear-gradient(135deg, var(--accent-secondary), #3b82f6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

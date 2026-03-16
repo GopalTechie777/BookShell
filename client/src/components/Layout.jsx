@@ -19,7 +19,7 @@ export default function Layout() {
 
   return (
     <div className="page-wrapper">
-      <header className="fixed-header glass-panel">
+      <header className="fixed-header">
         <div className="container header-content">
           <Link to="/" className="brand-link">
             <BookOpen className="brand-icon" size={28} />

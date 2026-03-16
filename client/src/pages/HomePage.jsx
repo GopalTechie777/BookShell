@@ -1,32 +1,45 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { BookOpen, TrendingUp, Grid, Sparkles, Feather, Archive } from 'lucide-react';
-import { bookApi, categoryApi } from '../services/api';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search, Flame, Star, Clock, Heart, ChevronRight } from 'lucide-react';
+import { bookApi } from '../services/api';
 import BookCard from '../components/BookCard';
 import './HomePage.css';
 
 export default function HomePage() {
-  const [featured, setFeatured] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [editorsChoice, setEditorsChoice] = useState([]);
+  const [trending, setTrending] = useState([]);
+  const [newlyAdded, setNewlyAdded] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Fetch different sections of books to mimic ManyBooks.net
     Promise.all([
-      bookApi.getBooks({ featured: true, limit: 12 }),
-      categoryApi.getCategories()
+      bookApi.getBooks({ featured: true, limit: 6 }), // Editor's Choice
+      bookApi.getBooks({ limit: 6, page: 2 }),        // Fake Trending (just another page for now)
+      bookApi.getBooks({ limit: 12, page: 1 })        // Newly Added
     ])
-      .then(([booksRes, catsRes]) => {
-        setFeatured(booksRes.data.data);
-        setCategories(catsRes.data.data);
+      .then(([featuredRes, trendingRes, newRes]) => {
+        setEditorsChoice(featuredRes.data.data);
+        setTrending(trendingRes.data.data);
+        setNewlyAdded(newRes.data.data);
       })
       .catch(err => console.error("Error loading homepage data:", err))
       .finally(() => setLoading(false));
   }, []);
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
   if (loading) {
     return (
       <div className="container" style={{ paddingTop: '80px', textAlign: 'center' }}>
-        <p className="loading-text">Loading your library...</p>
+        <p className="loading-text">Loading the library...</p>
       </div>
     );
   }
@@ -34,106 +47,112 @@ export default function HomePage() {
   return (
     <div className="homepage">
       {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-glow"></div>
-        <div className="container hero-content">
-          <div className="hero-badge">
-            <Sparkles size={16} className="hero-badge-icon" />
-            <span>Welcome to the new BookShell</span>
-          </div>
-          <h1 className="hero-title">
-            Your Digital Library, <br />
-            <span className="text-gradient">Redefined.</span>
+      <section className="mb-hero-section">
+        <div className="container mb-hero-content">
+          <h1 className="mb-hero-title">
+            50,000+ Free eBooks in the Genres you Love
           </h1>
-          <p className="hero-subtitle">
-            Immerse yourself in a beautiful, distraction-free reading experience.
-            Thousands of true classics and modern stories, elegantly presented.
+          <p className="mb-hero-subtitle">
+            Join us in exploring a world of literature. Read timeless classics and discover modern gems.
           </p>
-          <div className="hero-actions">
-            <a href="#featured" className="btn btn-primary">Start Reading</a>
-            <Link to="/categories" className="btn btn-secondary glass-panel">Browse Categories</Link>
-          </div>
-          <div className="hero-stats">
-            <div className="stat-item">
-              <span className="stat-value">10k+</span>
-              <span className="stat-label">Free Books</span>
+          
+          <form className="mb-search-form" onSubmit={handleSearch}>
+            <div className="mb-search-input-wrapper">
+              <Search className="mb-search-icon" size={24} />
+              <input 
+                type="text" 
+                placeholder="Search by title, author, or keyword..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="mb-search-input"
+              />
+              <button type="submit" className="mb-search-button">
+                SEARCH
+              </button>
             </div>
-            <div className="stat-divider"></div>
-            <div className="stat-item">
-              <span className="stat-value">Zero</span>
-              <span className="stat-label">Distractions</span>
-            </div>
-            <div className="stat-divider"></div>
-            <div className="stat-item">
-              <span className="stat-value">Sync</span>
-              <span className="stat-label">Anywhere</span>
-            </div>
+          </form>
+          
+          <div className="mb-hero-links">
+            <Link to="/categories">Browse Categories</Link>
+            <span className="dot-separator">•</span>
+            <Link to="/search">Advanced Search</Link>
           </div>
         </div>
       </section>
 
-      <div className="container main-content-spacing">
-        {/* Features Section */}
-        <section className="features-section">
-          <div className="feature-card glass-panel">
-            <div className="feature-icon-wrapper"><BookOpen size={24} /></div>
-            <h3>Pure Reading</h3>
-            <p>A minimalist interface designed solely for your reading pleasure, without ads or clutter.</p>
-          </div>
-          <div className="feature-card glass-panel">
-            <div className="feature-icon-wrapper"><Archive size={24} /></div>
-            <h3>Curated Collections</h3>
-            <p>Hand-picked selections spanning across multiple genres, eras, and literary movements.</p>
-          </div>
-          <div className="feature-card glass-panel">
-            <div className="feature-icon-wrapper"><Feather size={24} /></div>
-            <h3>Always Free</h3>
-            <p>Access our entire catalog without subscriptions, paywalls, or hidden fees.</p>
-          </div>
-        </section>
-
-        {/* Categories Section */}
-        <section className="categories-section">
-          <div className="section-header">
-            <h2 className="section-title">
-              <Grid className="section-icon" /> Browse by Category
-            </h2>
-          </div>
-          <div className="categories-grid">
-            {categories.map((cat) => (
-              <Link key={cat.id} to={`/categories/${cat.id}`} className="category-card glass-panel">
-                <h3 className="category-name">{cat.name}</h3>
-                <p className="category-desc">{cat.description || 'Explore books in this category'}</p>
-                <div className="category-meta">
-                  <BookOpen size={14} />
-                  <span>{cat.bookCount} books</span>
-                </div>
+      <div className="container mb-main-content">
+        
+        {/* Editor's Choice */}
+        {editorsChoice.length > 0 && (
+          <section className="mb-book-section">
+            <div className="mb-section-header">
+              <h2 className="mb-section-title">
+                <Star className="mb-section-icon icon-yellow" /> Editor's Choice
+              </h2>
+              <Link to="/search?featured=true" className="mb-view-all">
+                View all <ChevronRight size={16} />
               </Link>
-            ))}
-          </div>
-        </section>
-
-        {/* Featured Books Section */}
-        <section id="featured" className="featured-section">
-          <div className="section-header">
-            <h2 className="section-title">
-              <TrendingUp className="section-icon text-gradient" /> Featured Reads
-            </h2>
-            <Link to="/search" className="view-all-link">Search All Books →</Link>
-          </div>
-          
-          {featured.length > 0 ? (
-            <div className="books-grid">
-              {featured.map(book => (
-                <BookCard key={book.id} book={book} />
+            </div>
+            <div className="mb-books-grid">
+              {editorsChoice.map(book => (
+                <BookCard key={`featured-${book.id}`} book={book} />
               ))}
             </div>
-          ) : (
-            <div className="empty-state glass-panel">
-              <p>No featured books available at the moment.</p>
+          </section>
+        )}
+
+        {/* Trending Books */}
+        {trending.length > 0 && (
+          <section className="mb-book-section mb-section-alt">
+            <div className="mb-section-header">
+              <h2 className="mb-section-title">
+                <Flame className="mb-section-icon icon-orange" /> Trending Books
+              </h2>
+              <Link to="/search" className="mb-view-all">
+                View all <ChevronRight size={16} />
+              </Link>
             </div>
-          )}
+            <div className="mb-books-grid">
+              {trending.map(book => (
+                <BookCard key={`trending-${book.id}`} book={book} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Newly Added eBooks */}
+        {newlyAdded.length > 0 && (
+          <section className="mb-book-section">
+            <div className="mb-section-header">
+              <h2 className="mb-section-title">
+                <Clock className="mb-section-icon icon-green" /> Newly Added eBooks
+              </h2>
+              <Link to="/search" className="mb-view-all">
+                View all <ChevronRight size={16} />
+              </Link>
+            </div>
+            <div className="mb-books-grid">
+              {newlyAdded.map(book => (
+                <BookCard key={`new-${book.id}`} book={book} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Categories / Genres callout */}
+        <section className="mb-genres-banner">
+          <div className="mb-genres-banner-content">
+            <h3>Find Your Next Favorite Genre</h3>
+            <p>From pulse-pounding thrillers to heartwarming romances, we have it all.</p>
+            <Link to="/categories" className="btn mb-genres-btn">
+              Explore All Categories
+            </Link>
+          </div>
+          <div className="mb-genres-banner-icon">
+            <Heart size={80} className="icon-red" />
+          </div>
         </section>
+
       </div>
     </div>
   );
