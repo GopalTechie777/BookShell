@@ -41,76 +41,16 @@ async function main() {
   const insertedBooks = await db
     .insert(books)
     .values([
-      {
-        title: 'The Stars Are Ours',
-        author: 'Elara Voss',
-        description: "Humanity's last survivors flee a dying Earth aboard the generation ship Prometheus, only to discover they are not alone in the cosmos.",
-        isFeatured: true,
-        categoryId: sciFi.id,
-      },
-      {
-        title: 'Echoes of the Void',
-        author: 'Marcus Okafor',
-        description: "A deep-space archaeologist uncovers an alien artifact that rewrites humanity's understanding of time itself.",
-        isFeatured: true,
-        categoryId: sciFi.id,
-      },
-      {
-        title: "The Dragon's Last Oath",
-        author: 'Sylvie Renne',
-        description: 'When the last dragon bonds with an unlikely farm girl, an ancient war threatens to consume the seven kingdoms.',
-        isFeatured: true,
-        categoryId: fantasy.id,
-      },
-      {
-        title: 'Thornwood Academy',
-        author: 'James R. Calloway',
-        description: "A school for magic users hidden beneath London's streets—until a student vanishes and the headmaster is the prime suspect.",
-        isFeatured: false,
-        categoryId: fantasy.id,
-      },
-      {
-        title: 'The Vanishing Hour',
-        author: 'Nina Alcott',
-        description: 'Detective Cara Solis has 24 hours to solve a disappearance before a killer erases all evidence—including herself.',
-        isFeatured: true,
-        categoryId: mystery.id,
-      },
-      {
-        title: 'Cold Harbour',
-        author: 'R. L. Whitmore',
-        description: 'A retired forensic analyst is pulled back into the shadows when her old case resurfaces with a new victim.',
-        isFeatured: false,
-        categoryId: mystery.id,
-      },
-      {
-        title: 'Pride and Prejudice',
-        author: 'Jane Austen',
-        description: 'The timeless story of Elizabeth Bennet and the proud Mr. Darcy in Regency-era England.',
-        isFeatured: true,
-        categoryId: classics.id,
-      },
-      {
-        title: 'Cosmos Unbound',
-        author: 'Dr. Taryn Osei',
-        description: 'A sweeping journey through the universe—from the Big Bang to the strange physics of black holes—written for the curious mind.',
-        isFeatured: false,
-        categoryId: nonFiction.id,
-      },
-      {
-        title: 'The Midnight Protocol',
-        author: 'Chen Wei',
-        description: 'When the global AI network goes dark, a lone systems engineer must navigate a world descending into chaos.',
-        isFeatured: true,
-        categoryId: sciFi.id,
-      },
-      {
-        title: 'Wandering Roots',
-        author: 'Amara Diallo',
-        description: 'A memoir of immigration, identity, and the search for home across three continents.',
-        isFeatured: false,
-        categoryId: nonFiction.id,
-      },
+      { title: 'The War of the Worlds', author: 'H. G. Wells', description: 'A classic science fiction novel describing the invasion of Earth by Martians from a narrator in London.', isFeatured: true, categoryId: sciFi.id, coverImage: 'https://www.gutenberg.org/cache/epub/36/pg36.cover.medium.jpg' },
+      { title: 'The Time Machine', author: 'H. G. Wells', description: 'A man travels into the distant future and discovers the divided descendants of humanity: the Eloi and the Morlocks.', isFeatured: true, categoryId: sciFi.id, coverImage: 'https://www.gutenberg.org/cache/epub/35/pg35.cover.medium.jpg' },
+      { title: "Alice's Adventures in Wonderland", author: 'Lewis Carroll', description: 'A young girl falls through a rabbit hole into a fantasy world populated by peculiar, anthropomorphic creatures.', isFeatured: true, categoryId: fantasy.id, coverImage: 'https://www.gutenberg.org/cache/epub/11/pg11.cover.medium.jpg' },
+      { title: 'Peter Pan', author: 'J. M. Barrie', description: 'The story of a mischievous boy who can fly and never grows up, spending his never-ending childhood on the island of Neverland.', isFeatured: false, categoryId: fantasy.id, coverImage: 'https://www.gutenberg.org/cache/epub/16/pg16.cover.medium.jpg' },
+      { title: 'The Hound of the Baskervilles', author: 'Arthur Conan Doyle', description: 'Sherlock Holmes investigates the legend of a supernatural hound on the haunted moors of Devonshire.', isFeatured: true, categoryId: mystery.id, coverImage: 'https://www.gutenberg.org/cache/epub/2852/pg2852.cover.medium.jpg' },
+      { title: 'The Adventures of Sherlock Holmes', author: 'Arthur Conan Doyle', description: 'A collection of twelve short stories featuring the famous consulting detective Sherlock Holmes and his friend Dr. John Watson.', isFeatured: false, categoryId: mystery.id, coverImage: 'https://www.gutenberg.org/cache/epub/1661/pg1661.cover.medium.jpg' },
+      { title: 'Pride and Prejudice', author: 'Jane Austen', description: 'The timeless story of Elizabeth Bennet and the proud Mr. Darcy in Regency-era England.', isFeatured: true, categoryId: classics.id, coverImage: 'https://www.gutenberg.org/cache/epub/1342/pg1342.cover.medium.jpg' },
+      { title: 'Walden', author: 'Henry David Thoreau', description: 'A reflection upon simple living in natural surroundings, and a manual for self-reliance.', isFeatured: false, categoryId: nonFiction.id, coverImage: 'https://www.gutenberg.org/cache/epub/205/pg205.cover.medium.jpg' },
+      { title: 'Frankenstein', author: 'Mary Wollstonecraft Shelley', description: 'The story of a young scientist who creates a sapient creature in an unorthodox scientific experiment.', isFeatured: true, categoryId: sciFi.id, coverImage: 'https://www.gutenberg.org/cache/epub/84/pg84.cover.medium.jpg' },
+      { title: 'Narrative of the Life of Frederick Douglass', author: 'Frederick Douglass', description: 'An influential memoir and treatise on abolition written by a famous orator and former slave.', isFeatured: false, categoryId: nonFiction.id, coverImage: 'https://www.gutenberg.org/cache/epub/23/pg23.cover.medium.jpg' },
     ])
     .onConflictDoNothing()
     .returning();
@@ -124,7 +64,7 @@ async function main() {
   const chaptersToInsert = [
     // The Stars Are Ours
     {
-      bookId: bookMap['The Stars Are Ours'].id,
+      bookId: bookMap['The War of the Worlds'].id,
       title: 'Departure',
       order: 1,
       content: `<h2>Chapter 1: Departure</h2>
@@ -135,7 +75,7 @@ async function main() {
 <p>The ship groaned as the engines fired. Mira grabbed the viewport railing, felt the force build in her chest, and watched Earth disappear into the past.</p>`,
     },
     {
-      bookId: bookMap['The Stars Are Ours'].id,
+      bookId: bookMap['The War of the Worlds'].id,
       title: 'First Contact',
       order: 2,
       content: `<h2>Chapter 2: First Contact</h2>
@@ -148,7 +88,7 @@ async function main() {
 <p>The implications settled over the room like a slow tide. They were not alone. They had never been alone. And whatever was waiting for them at Proxima Centauri already knew they were coming.</p>`,
     },
     {
-      bookId: bookMap['The Stars Are Ours'].id,
+      bookId: bookMap['The War of the Worlds'].id,
       title: 'The Weight of Distance',
       order: 3,
       content: `<h2>Chapter 3: The Weight of Distance</h2>
@@ -160,7 +100,7 @@ async function main() {
     },
     // The Dragon's Last Oath
     {
-      bookId: bookMap["The Dragon's Last Oath"].id,
+      bookId: bookMap["Alice's Adventures in Wonderland"].id,
       title: 'The Dying Fire',
       order: 1,
       content: `<h2>Chapter 1: The Dying Fire</h2>
@@ -171,7 +111,7 @@ async function main() {
 <p>The village held its breath. Then the dragon lowered its great head to the ground, and Lena felt, with absolute certainty she could not explain, that it was waiting for her.</p>`,
     },
     {
-      bookId: bookMap["The Dragon's Last Oath"].id,
+      bookId: bookMap["Alice's Adventures in Wonderland"].id,
       title: 'The Bond',
       order: 2,
       content: `<h2>Chapter 2: The Bond</h2>
@@ -183,7 +123,7 @@ async function main() {
     },
     // The Vanishing Hour
     {
-      bookId: bookMap['The Vanishing Hour'].id,
+      bookId: bookMap['The Hound of the Baskervilles'].id,
       title: 'The Call',
       order: 1,
       content: `<h2>Chapter 1: The Call</h2>
@@ -197,7 +137,7 @@ async function main() {
 <p>"That's what we need you to figure out. And Solis—the note says we have until midnight."</p>`,
     },
     {
-      bookId: bookMap['The Vanishing Hour'].id,
+      bookId: bookMap['The Hound of the Baskervilles'].id,
       title: 'The Scene',
       order: 2,
       content: `<h2>Chapter 2: The Scene</h2>

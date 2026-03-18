@@ -45,7 +45,7 @@
   font-family: 'Georgia', serif; /* Optional serif fallback for pure reading */
   font-size: 1.25rem;
   line-height: 1.8;
-  color: #e2e8f0;
+  color: var(--text-main);
 }
 
 .chapter-content h1, 
@@ -53,7 +53,7 @@
   font-family: var(--font-display);
   font-size: 2.5rem;
   margin-bottom: 40px;
-  color: #fff;
+  color: var(--text-main);
   text-align: center;
   line-height: 1.2;
 }
@@ -62,7 +62,12 @@
   font-size: 1.75rem;
   margin-top: 40px;
   margin-bottom: 24px;
-  color: #fff;
+  color: var(--text-main);
+}
+
+.chapter-content a {
+  color: var(--accent-secondary);
+  text-decoration: underline;
 }
 
 .chapter-content p {
@@ -110,6 +115,7 @@
 }
 
 .nav-btn.primary:hover {
+  background: var(--accent-primary);
   border-color: var(--accent-primary);
   transform: translateY(-2px);
   color: #fff;

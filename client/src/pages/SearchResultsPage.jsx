@@ -7,7 +7,7 @@ import { Search, Library, BookOpen, Download, CheckCircle, AlertCircle } from 'l
 import './ListPage.css';
 
 // Per-card import state: idle | importing | done | error
-function GutenbergCard({ book, isAdmin }) {
+function GutenbergCard({ book, canImport }) {
   const navigate = useNavigate();
   const [status, setStatus] = useState('idle'); // idle | importing | done | error
   const [errorMsg, setErrorMsg] = useState('');
@@ -26,6 +26,9 @@ function GutenbergCard({ book, isAdmin }) {
       if (err.response?.status === 409) {
         setImportedId(err.response.data.error.bookId);
         setStatus('done');
+      } else if (err.response?.status === 401) {
+        setErrorMsg('Session expired. Please log in as Admin.');
+        setStatus('error');
       } else {
         setErrorMsg(msg);
         setStatus('error');
@@ -34,11 +37,11 @@ function GutenbergCard({ book, isAdmin }) {
   };
 
   return (
-    <div style={{ position: 'relative' }}>
-      {/* Reuse BookCard visuals but render as a non-link div */}
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* Reuse BookCard visuals but render as a non-link div flex-grow to push button down */}
       <div
         className="book-card glass-panel"
-        style={{ cursor: status === 'done' && importedId ? 'pointer' : 'default' }}
+        style={{ cursor: status === 'done' && importedId ? 'pointer' : 'default', flexGrow: 1 }}
         onClick={() => status === 'done' && importedId && navigate(`/books/${importedId}`)}
       >
         <div className="book-cover">
@@ -60,8 +63,8 @@ function GutenbergCard({ book, isAdmin }) {
       </div>
 
       {/* Import overlay button */}
-      {isAdmin && (
-        <div style={{ padding: '8px 12px 12px' }}>
+      {canImport && (
+        <div style={{ paddingTop: '12px', marginTop: 'auto' }}>
           {status === 'idle' && (
             <button
               onClick={handleImport}
@@ -137,7 +140,8 @@ export default function SearchResultsPage() {
   const [params] = useSearchParams();
   const q = params.get('q') || '';
   const page = parseInt(params.get('page')) || 1;
-  const limit = 20;
+  const localLimit = 20;
+  const gutenbergLimit = 32;
 
   const [searchSource, setSearchSource] = useState('local'); // 'local' | 'gutenberg'
 
@@ -145,28 +149,37 @@ export default function SearchResultsPage() {
   const [total, setTotal] = useState(0);
   const [gutenbergHasNext, setGutenbergHasNext] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [noticeMsg, setNoticeMsg] = useState(null);
 
   // Detect if user is logged in as admin (has token in localStorage)
-  const isAdmin = !!localStorage.getItem('adminToken');
+  const isUser = !!localStorage.getItem('userToken');
+  const canImport = !!localStorage.getItem('adminToken') || isUser;
 
   useEffect(() => {
     if (!q) {
       setBooks([]);
       setTotal(0);
+      setErrorMsg(null);
       return;
     }
 
     setBooks([]);
     setLoading(true);
+    setErrorMsg(null);
+    setNoticeMsg(null);
 
     if (searchSource === 'local') {
       bookApi
-        .search({ q, page, limit })
+        .search({ q, page, limit: localLimit })
         .then((res) => {
           setBooks(res.data.data);
           setTotal(res.data.total);
         })
-        .catch(console.error)
+        .catch((err) => {
+          console.error(err);
+          setErrorMsg('Failed to search local library. Please try again.');
+        })
         .finally(() => setLoading(false));
     } else {
       // Search Project Gutenberg via our own proxy endpoint
@@ -176,8 +189,18 @@ export default function SearchResultsPage() {
           setBooks(res.data.data);
           setTotal(res.data.total);
           setGutenbergHasNext(res.data.hasNext);
+          if (
+            res.data.degraded &&
+            res.data.message &&
+            !res.data.message.includes('Using Project Gutenberg fallback search source')
+          ) {
+            setNoticeMsg(res.data.message);
+          }
         })
-        .catch(console.error)
+        .catch((err) => {
+          console.error('Gutenberg search error:', err.response?.status || err.message);
+          setErrorMsg(err.response?.data?.error?.message || 'Gutenberg search unavailable. Please try again.');
+        })
         .finally(() => setLoading(false));
     }
   }, [q, page, searchSource]);
@@ -199,12 +222,13 @@ export default function SearchResultsPage() {
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '32px' }}>
               <button
                 onClick={() => setSearchSource('local')}
+                className="search-source-btn"
                 style={{
                   padding: '10px 20px',
                   borderRadius: '99px',
                   border: searchSource === 'local' ? 'none' : '1px solid var(--border-delicate)',
-                  background: searchSource === 'local' ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)',
-                  color: '#fff',
+                  background: searchSource === 'local' ? 'var(--accent-primary)' : '#fff',
+                  color: searchSource === 'local' ? '#fff' : 'var(--text-main)',
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -218,12 +242,13 @@ export default function SearchResultsPage() {
               </button>
               <button
                 onClick={() => setSearchSource('gutenberg')}
+                className="search-source-btn"
                 style={{
                   padding: '10px 20px',
                   borderRadius: '99px',
                   border: searchSource === 'gutenberg' ? 'none' : '1px solid var(--border-delicate)',
-                  background: searchSource === 'gutenberg' ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)',
-                  color: '#fff',
+                  background: searchSource === 'gutenberg' ? 'var(--accent-primary)' : '#fff',
+                  color: searchSource === 'gutenberg' ? '#fff' : 'var(--text-main)',
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -238,25 +263,61 @@ export default function SearchResultsPage() {
             </div>
           )}
 
-          {searchSource === 'gutenberg' && isAdmin && (
-            <p style={{ marginTop: '12px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
+          {searchSource === 'gutenberg' && canImport && (
+            <p style={{ marginTop: '12px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
               Click <strong>Import to Library</strong> on any result to fetch and store the full book for reading here.
             </p>
           )}
-          {searchSource === 'gutenberg' && !isAdmin && (
-            <p style={{ marginTop: '12px', fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)' }}>
-              Browsing 70,000+ free public domain books. Log in as admin to import any book for reading.
+          {searchSource === 'gutenberg' && !canImport && (
+            <p style={{ marginTop: '12px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+              Browsing 70,000+ free public domain books. Log in to import any book for reading.
             </p>
           )}
         </div>
       </div>
 
-      <div className="container list-content">
+      <div className={`container list-content ${searchSource === 'local' ? 'list-content-wide' : ''}`}>
+        {noticeMsg && (
+          <div
+            className="glass-panel"
+            style={{
+              padding: '12px 14px',
+              marginBottom: '16px',
+              borderColor: 'rgba(245, 158, 11, 0.35)',
+              background: 'rgba(245, 158, 11, 0.08)',
+              color: 'var(--text-main)',
+              fontSize: '0.92rem',
+            }}
+          >
+            {noticeMsg}
+          </div>
+        )}
         {loading ? (
           <div className="center-message">
-            <p className="loading-text">
-              {searchSource === 'gutenberg' ? 'Searching Project Gutenberg...' : 'Searching database...'}
+            <p className="loading-text loading-inline" aria-live="polite">
+              {searchSource === 'gutenberg' ? 'Searching Project Gutenberg' : 'Searching database'}
+              <span className="loading-dots" aria-hidden="true"></span>
             </p>
+          </div>
+        ) : errorMsg ? (
+          <div className="empty-state glass-panel">
+            <AlertCircle size={48} className="empty-icon" style={{ color: 'var(--accent-primary)', marginBottom: '16px' }} />
+            <h3>Search Failed</h3>
+            <p>{errorMsg}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              style={{
+                marginTop: '16px',
+                padding: '8px 16px',
+                background: 'var(--accent-primary)',
+                color: '#fff',
+                borderRadius: '8px',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              Retry
+            </button>
           </div>
         ) : !q ? (
           <div className="empty-state glass-panel">
@@ -271,34 +332,15 @@ export default function SearchResultsPage() {
                 ? `${total.toLocaleString()} results in Project Gutenberg — page ${page}`
                 : `Found ${total} ${total === 1 ? 'result' : 'results'}`}
             </p>
-            <div className="books-grid">
+            <div className={`books-grid ${searchSource === 'local' ? 'books-grid-local' : ''}`}>
               {searchSource === 'local'
                 ? books.map((book) => <BookCard key={book.id} book={book} />)
                 : books.map((book) => (
-                    <GutenbergCard key={book.gutenbergId ?? book.id} book={book} isAdmin={isAdmin} />
+                    <GutenbergCard key={book.gutenbergId ?? book.id} book={book} canImport={canImport} />
                   ))}
             </div>
-            {searchSource === 'local' && <Pagination total={total} limit={limit} />}
-            {searchSource === 'gutenberg' && (
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '32px' }}>
-                {page > 1 && (
-                  <a
-                    href={`?q=${encodeURIComponent(q)}&page=${page - 1}`}
-                    style={navBtnStyle}
-                  >
-                    ← Previous
-                  </a>
-                )}
-                {gutenbergHasNext && (
-                  <a
-                    href={`?q=${encodeURIComponent(q)}&page=${page + 1}`}
-                    style={navBtnStyle}
-                  >
-                    Next →
-                  </a>
-                )}
-              </div>
-            )}
+            {searchSource === 'local' && <Pagination total={total} limit={localLimit} />}
+            {searchSource === 'gutenberg' && <Pagination total={total} limit={gutenbergLimit} />}
           </>
         ) : (
           <div className="empty-state glass-panel">
@@ -312,14 +354,3 @@ export default function SearchResultsPage() {
   );
 }
 
-const navBtnStyle = {
-  padding: '10px 24px',
-  borderRadius: '99px',
-  border: '1px solid var(--border-delicate)',
-  background: 'rgba(255,255,255,0.05)',
-  color: '#fff',
-  textDecoration: 'none',
-  fontFamily: 'var(--font-sans)',
-  fontWeight: 500,
-  fontSize: '0.9rem',
-};

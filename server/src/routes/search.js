@@ -33,9 +33,7 @@ router.get(
 
       try {
         // PostgreSQL full-text search via Drizzle sql`` tag
-        // Convert multi-word input to tsquery AND terms: "dark matter" → "dark & matter"
-        const tsQuery = q.split(/\s+/).join(' & ');
-
+        // Use plainto_tsquery to safely parse user input (handles punctuation and spacing).
         const ftsResults = await db.execute(sql`
           SELECT
             b.id::text,
@@ -50,10 +48,10 @@ router.get(
           FROM books b
           LEFT JOIN categories c ON b.category_id = c.id
           WHERE to_tsvector('english', b.title || ' ' || b.author)
-                @@ to_tsquery('english', ${tsQuery})
+                @@ plainto_tsquery('english', ${q})
           ORDER BY ts_rank(
             to_tsvector('english', b.title || ' ' || b.author),
-            to_tsquery('english', ${tsQuery})
+            plainto_tsquery('english', ${q})
           ) DESC
           LIMIT ${limit} OFFSET ${offset}
         `);
@@ -62,7 +60,7 @@ router.get(
           SELECT COUNT(*)::int AS total
           FROM books b
           WHERE to_tsvector('english', b.title || ' ' || b.author)
-                @@ to_tsquery('english', ${tsQuery})
+                @@ plainto_tsquery('english', ${q})
         `);
 
         data = ftsResults.map((r) => ({

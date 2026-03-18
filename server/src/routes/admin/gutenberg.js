@@ -1,5 +1,6 @@
 const express = require('express');
 const { body, param } = require('express-validator');
+const jwt = require('jsonwebtoken');
 const { eq } = require('drizzle-orm');
 const { db } = require('../../db');
 const { books, chapters } = require('../../db/schema');
@@ -10,12 +11,33 @@ const { parseChapters, pickFormatUrl } = require('../../utils/gutenbergParser');
 const router = express.Router();
 const GUTENDEX_BASE = 'https://gutendex.com';
 
-router.use(auth);
+function importAuth(req, res, next) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({
+      error: { message: 'Authorization token required', status: 401 },
+    });
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.actor = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).json({
+      error: { message: 'Invalid or expired token', status: 401 },
+    });
+  }
+}
 
 // POST /api/v1/admin/gutenberg/import
 // Fetches a Project Gutenberg book by ID, parses chapters, saves to DB.
 router.post(
   '/import',
+  importAuth,
   [
     body('gutenbergId')
       .isInt({ min: 1 })
@@ -145,6 +167,7 @@ router.post(
 // Use this to fix a book that was imported with an older/broken parser.
 router.put(
   '/reimport',
+  auth,
   [
     body('bookId').isUUID().withMessage('bookId must be a valid UUID'),
   ],
